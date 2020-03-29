@@ -1,0 +1,36 @@
+# Maintainer: Wachid Adi Nugroho <wachidadinugroho.maya@gmail.com>
+
+pkgname=material-decoration-lim-git
+pkgver=r55
+pkgrel=1
+pkgdesc='Material-ish window decoration theme for KWin'
+arch=('i686' 'x86_64')
+url='https://github.com/Zren/material-decoration/tree/lim'
+license=('GPL-2.0')
+depends=('kdecoration')
+makedepends=('cmake' 'git')
+source=('git+https://github.com/Zren/material-decoration.git')
+md5sums=('SKIP')
+_pkgbase=material-decoration
+
+pkgver() {
+  cd "${_pkgbase}"
+  git rev-list --all --count | sed 's/^/r/'
+}
+
+prepare() {
+  mkdir -p build
+  cd "${_pkgbase}"
+  git checkout lim
+}
+
+build() {
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr "../${_pkgbase}"
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="${pkgdir}" install
+}
