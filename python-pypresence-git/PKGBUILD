@@ -1,0 +1,46 @@
+# Maintainer: Wachid Adi Nugroho < gmail-com: wachidadinugroho.maya >
+
+pkgname='python-pypresence-git'
+pkgver=4.0.0.r0.g5717af4
+pkgrel=1
+pkgdesc='A complete Discord RPC and Rich Presence wrapper library in Python'
+url='https://qwertyquerty.github.io/pypresence/html/index.html'
+arch=('any')
+license=('MIT')
+makedepends=('python-setuptools')
+provides=('python-pypresence')
+conflicts=('python-pypresence')
+depends=('python')
+options=('!emptydirs')
+source=('git+https://github.com/qwertyquerty/pypresence.git')
+sha256sums=('SKIP')
+
+pkgver() {
+    cd pypresence
+    
+    local _version
+    local _line
+    local _lastverhash
+    local _revision
+    local _shorthash
+    
+    _version="$(python setup.py --version | head -n1 | sed 's/^v//')"
+    _line="$(grep -n "${_version}" pypresence.egg-info/PKG-INFO | cut -d ":" -f1)"
+    _lastverhash="$(git log -1 --pretty=format:"%H" -L${_line}:pypresence.egg-info/PKG-INFO | head -n1)"
+    _revision="$(git rev-list "${_lastverhash}"..HEAD --count)"
+    _shorthash="$(git rev-parse --short HEAD)"
+    
+    printf '%s.r%s.g%s' "${_version}" "${_revision}" "${_shorthash}"
+}
+
+build() {
+  cd "${srcdir}/pypresence"
+  python setup.py build
+}
+
+package() {
+  install -Dm644 "${srcdir}/pypresence/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  cd "${srcdir}/pypresence"
+  python setup.py install --prefix=/usr --root="${pkgdir}" --optimize=1
+}
