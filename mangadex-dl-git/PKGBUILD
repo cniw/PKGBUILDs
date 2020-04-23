@@ -1,0 +1,24 @@
+# Maintainer: Wachid Adi Nugroho <wachidadinugroho.maya@gmail.com>
+
+pkgname=mangadex-dl-git
+pkgver=r20.a203661
+pkgrel=1
+pkgdesc="A Python script to download manga from MangaDex.org."
+arch=('any')
+url="https://github.com/frozenpandaman/mangadex-dl"
+license=('unknown')
+makedepends=('git')
+depends=('python' 'python-cloudscraper')
+source=('git+https://github.com/frozenpandaman/mangadex-dl.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/mangadex-dl"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+   cd "$srcdir/mangadex-dl"
+   mkdir -p $pkgdir/usr/bin
+   install -m 0755 mangadex-dl.py $pkgdir/usr/bin/
+}
